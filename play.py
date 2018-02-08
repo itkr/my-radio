@@ -2,16 +2,13 @@ import os
 from time import sleep
 
 from selenium import webdriver
-
-DRIVER_PATH = os.path.join(os.path.abspath(
-    os.path.dirname(__file__)), 'chromedriver_mac64')
-URL = 'http://radiko.jp/#!/live/TBS'
+from selenium.webdriver.chrome.options import Options
 
 
 class Radio(object):
 
-    def __init__(self, driver_path, url):
-        self.driver = webdriver.Chrome(driver_path)
+    def __init__(self, driver_path, url, options=None):
+        self.driver = webdriver.Chrome(driver_path, chrome_options=options)
         self.driver.get(url)
 
     def play_or_stop(self):
@@ -32,7 +29,13 @@ class Radio(object):
 
 
 def main():
-    with Radio(DRIVER_PATH, URL):
+    driver_path = os.path.join(os.path.abspath(
+        os.path.dirname(__file__)), 'chromedriver_linux64_2.34')
+    url = 'http://radiko.jp/#!/live/TBS'
+    options = Options()
+    options.add_argument('--headless')
+
+    with Radio(driver_path, url, options):
         sleep(60 * 60)
 
 
