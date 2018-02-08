@@ -1,7 +1,10 @@
+import os
 from time import sleep
+
 from selenium import webdriver
 
-DRIVER_PATH = './chromedriver_mac64'
+DRIVER_PATH = os.path.join(os.path.abspath(
+    os.path.dirname(__file__)), 'chromedriver_mac64')
 URL = 'http://radiko.jp/#!/live/TBS'
 
 
@@ -15,7 +18,6 @@ class Radio(object):
         self._play_button.click()
 
     def exit(self):
-        self.driver.close()
         self.driver.quit()
 
     @property
