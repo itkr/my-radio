@@ -1,8 +1,44 @@
 import os
+import sys
 from time import sleep
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
+channels = {
+    'tbs': 'http://radiko.jp/#!/live/TBS',
+}
+
+
+class DriverPathNotFoundError(Exception):
+    pass
+
+
+def get_driver_path():
+    # 0: arg
+    if len(sys.argv) >= 2:
+        if os.path.exists(sys.argv[1]):
+            return sys.argv[1]
+
+    # 1: env
+    driver_path = os.environ.get('SELENIUM_DRIVER')
+    print(driver_path)
+    if driver_path and os.path.exists(driver_path):
+        return driver_path
+
+    # 2: local
+    driver_path = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), 'chromedriver'))
+    if os.path.exists(driver_path):
+        return driver_path
+
+    # 3: home
+    driver_path = os.path.abspath(os.path.join(
+        os.path.expanduser('~'), 'chromedriver'))
+    if os.path.exists(driver_path):
+        return driver_path
+
+    raise DriverPathNotFoundError
 
 
 class Radio(object):
@@ -29,9 +65,8 @@ class Radio(object):
 
 
 def main():
-    driver_path = os.path.join(os.path.abspath(
-        os.path.dirname(__file__)), 'chromedriver_linux64_2.34')
-    url = 'http://radiko.jp/#!/live/TBS'
+    driver_path = get_driver_path()
+    url = channels['tbs']
     options = Options()
     options.add_argument('--headless')
 
