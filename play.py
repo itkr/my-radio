@@ -1,28 +1,47 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import argparse
+import json
 import os
 import sys
 from time import sleep
+from datetime import datetime, timedelta
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
-channels = {
-    'tbs': 'http://radiko.jp/#!/live/TBS',
-}
 
 
 class DriverPathNotFoundError(Exception):
     pass
 
 
-def get_driver_path():
+def parse_args(channel_choices):
+    parser = argparse.ArgumentParser(
+        description='Play radio.')
+    parser.add_argument(
+        '-d', '--driver', dest='driver', help='driver file')
+    parser.add_argument(
+        '-c', '--channel', dest='channel', help='channel key',
+        default='TBS', choices=channel_choices)
+    return parser.parse_args()
+
+
+def get_channels():
+    channel_path = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), 'channel.json'))
+    with open(channel_path) as channel:
+        return json.loads(channel.read())
+
+
+def get_driver_path(args):
     # 0: arg
-    if len(sys.argv) >= 2:
-        if os.path.exists(sys.argv[1]):
-            return sys.argv[1]
+    driver_path = args.driver
+    if driver_path and os.path.exists(driver_path):
+        return driver_path
 
     # 1: env
     driver_path = os.environ.get('SELENIUM_DRIVER')
-    print(driver_path)
     if driver_path and os.path.exists(driver_path):
         return driver_path
 
@@ -65,13 +84,25 @@ class Radio(object):
 
 
 def main():
-    driver_path = get_driver_path()
-    url = channels['tbs']
     options = Options()
     options.add_argument('--headless')
 
-    with Radio(driver_path, url, options):
-        sleep(60 * 60)
+    channels = get_channels()
+    args = parse_args(channels.keys())
+    channel = channels[args.channel]
+    driver_path = get_driver_path(args)
+
+    start = datetime.now()
+    sleep_sec = 60 * 60
+    end = start + timedelta(seconds=sleep_sec)
+
+    print('Driver: {}'.format(driver_path))
+    print('Channel: {}'.format(channel['name'].encode('utf_8')))
+    print('Start: {}'.format(start.isoformat()))
+    print('End: {}'.format(end.isoformat()))
+
+    with Radio(driver_path, channel['url'], options):
+        sleep(sleep_sec)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,70 @@
+{
+    "BAYFM78": {
+        "name": "bayfm78",
+        "url": "http://radiko.jp/#!/live/BAYFM78"
+    },
+    "FMJ": {
+        "name": "J-WAVE",
+        "url": "http://radiko.jp/#!/live/FMJ"
+    },
+    "FMT": {
+        "name": "TOKYO FM",
+        "url": "http://radiko.jp/#!/live/FMT"
+    },
+    "HOUSOU-DAIGAKU": {
+        "name": "放送大学",
+        "url": "http://radiko.jp/#!/live/HOUSOU-DAIGAKU"
+    },
+    "INT": {
+        "name": "InterFM897",
+        "url": "http://radiko.jp/#!/live/INT"
+    },
+    "JOAB": {
+        "name": "NHK第2",
+        "url": "http://radiko.jp/#!/live/JOAB"
+    },
+    "JOAK": {
+        "name": "NHK第1",
+        "url": "http://radiko.jp/#!/live/JOAK"
+    },
+    "JOAR-FM": {
+        "name": "NHK-FM",
+        "url": "http://radiko.jp/#!/live/JOAR-FM"
+    },
+    "JORF": {
+        "name": "ラジオ日本",
+        "url": "http://radiko.jp/#!/live/JORF"
+    },
+    "LFR": {
+        "name": "ニッポン",
+        "url": "http://radiko.jp/#!/liveLFRLFR"
+    },
+    "LFR": {
+        "name": "ニッポン放送",
+        "url": "http://radiko.jp/#!/live/LFR"
+    },
+    "NACK5": {
+        "name": "NACK5",
+        "url": "http://radiko.jp/#!/live/NACK5"
+    },
+    "QRR": {
+        "name": "文化放送",
+        "url": "http://radiko.jp/#!/live/QRR"
+    },
+    "RN1": {
+        "name": "ラジオNIKKEI第1",
+        "url": "http://radiko.jp/#!/live/RN1"
+    },
+    "RN2": {
+        "name": "ラジオNIKKEI第2",
+        "url": "http://radiko.jp/#!/live/RN2"
+    },
+    "TBS": {
+        "name": "TBSラジオ",
+        "url": "http://radiko.jp/#!/live/TBS"
+    },
+    "YFM": {
+        "name": "FMヨコハマ",
+        "url": "http://radiko.jp/#!/live/YFM"
+    }
+}
