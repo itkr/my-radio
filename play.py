@@ -27,6 +27,9 @@ def parse_args(channel_choices):
     parser.add_argument(
         '-c', '--channel', dest='channel', help='channel key',
         default='TBS', choices=channel_choices)
+    parser.add_argument(
+        '-s', '--seconds', dest='playback_seconds', type=int,
+        help='playback seconds', default=60 * 60)
     return parser.parse_args()
 
 
@@ -96,8 +99,7 @@ def main():
     driver_path = get_driver_path(args)
 
     start = datetime.now()
-    sleep_sec = 60 * 60
-    end = start + timedelta(seconds=sleep_sec)
+    end = start + timedelta(seconds=args.playback_seconds)
 
     print('Driver: {}'.format(driver_path))
     print('Channel: {}'.format(channel['name'].encode('utf_8')))
@@ -105,7 +107,7 @@ def main():
     print('End: {}'.format(end.isoformat()))
 
     with Radio(driver_path, channel['url'], options):
-        sleep(sleep_sec)
+        sleep(args.playback_seconds)
 
 
 def _check_encoding():
