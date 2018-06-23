@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import, print_function, unicode_literals
+
 import argparse
 import json
 import os
 import sys
-from time import sleep
 from datetime import datetime, timedelta
+from distutils.sysconfig import get_python_lib
+from time import sleep
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -105,5 +108,16 @@ def main():
         sleep(sleep_sec)
 
 
+def _check_encoding():
+    if sys.getdefaultencoding() == 'utf-8':
+        return
+    print('''{}/sitecustomize.pyに以下を記載
+    import sys
+    sys.setdefaultencoding(\'utf-8\')
+    '''.format(get_python_lib()))
+    exit()
+
+
 if __name__ == '__main__':
+    _check_encoding()
     main()
