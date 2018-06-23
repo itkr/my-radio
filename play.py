@@ -11,8 +11,8 @@ from datetime import datetime, timedelta
 from distutils.sysconfig import get_python_lib
 from time import sleep
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from modules.channel import get_channels
+from modules.radio import Radio
 
 
 class DriverPathNotFoundError(Exception):
@@ -31,13 +31,6 @@ def parse_args(channel_choices):
         '-s', '--seconds', dest='playback_seconds', type=int,
         help='playback seconds', default=60 * 60)
     return parser.parse_args()
-
-
-def get_channels():
-    channel_path = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), 'channels/JP13.json'))
-    with open(channel_path) as channel:
-        return json.loads(channel.read())
 
 
 def get_driver_path(args):
@@ -66,32 +59,7 @@ def get_driver_path(args):
     raise DriverPathNotFoundError
 
 
-class Radio(object):
-
-    def __init__(self, driver_path, url, options=None):
-        self.driver = webdriver.Chrome(driver_path, chrome_options=options)
-        self.driver.get(url)
-
-    def play_or_stop(self):
-        self._play_button.click()
-
-    def exit(self):
-        self.driver.quit()
-
-    @property
-    def _play_button(self):
-        return self.driver.find_element_by_class_name('btn--primary')
-
-    def __enter__(self):
-        self.play_or_stop()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.exit()
-
-
 def main():
-    options = Options()
-    options.add_argument('--headless')
 
     channels = get_channels()
     args = parse_args(channels.keys())
@@ -106,7 +74,7 @@ def main():
     print('Start: {}'.format(start.isoformat()))
     print('End: {}'.format(end.isoformat()))
 
-    with Radio(driver_path, channel['url'], options):
+    with Radio(driver_path, channel['url']):
         sleep(args.playback_seconds)
 
 
