@@ -35,7 +35,7 @@ def parse_args(channel_choices):
 
 def get_channels():
     channel_path = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), 'channel.json'))
+        os.path.dirname(__file__), 'channels/JP13.json'))
     with open(channel_path) as channel:
         return json.loads(channel.read())
 
