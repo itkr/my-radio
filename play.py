@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import sys
+import threading
 from datetime import datetime, timedelta
 from distutils.sysconfig import get_python_lib
 from time import sleep
@@ -59,6 +60,41 @@ def get_driver_path(args):
     raise DriverPathNotFoundError
 
 
+class Controller(object):
+    _stop = False
+
+    def __init__(self, playback):
+        self.start_time = datetime.now()
+        self.end_time = self.start_time + timedelta(seconds=playback)
+        print('Start: {}'.format(self.start_time.isoformat()))
+        print('End: {}'.format(self.end_time.isoformat()))
+
+        self.prompt = threading.Thread(target=self._prompt)
+        self.prompt.start()
+
+    def _prompt(self):
+        while not self._stop:
+            try:
+                user_in = raw_input('>> ')
+            except EOFError:
+                self.stop()
+                break
+            if user_in == 'q()':
+                self.stop()
+
+    def _start_loop(self):
+        while not self._stop:
+            sleep(1)
+            if self.end_time < datetime.now():
+                self.stop()
+
+    def start(self):
+        self._start_loop()
+
+    def stop(self):
+        self._stop = True
+
+
 def main():
 
     channels = get_channels()
@@ -66,16 +102,13 @@ def main():
     channel = channels[args.channel]
     driver_path = get_driver_path(args)
 
-    start = datetime.now()
-    end = start + timedelta(seconds=args.playback_seconds)
-
     print('Driver: {}'.format(driver_path))
     print('Channel: {}'.format(channel['name'].encode('utf_8')))
-    print('Start: {}'.format(start.isoformat()))
-    print('End: {}'.format(end.isoformat()))
 
     with Radio(driver_path, channel['url']):
-        sleep(args.playback_seconds)
+        Controller(args.playback_seconds).start()
+
+    exit()
 
 
 def _check_encoding():
