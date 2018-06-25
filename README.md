@@ -1,5 +1,11 @@
 # my-radio
 
+## Installation (Get source code)
+
+```bash
+git clone git@github.com:itkr/my-radio.git
+```
+
 ## Preparation
 
 ### Install Selenium
