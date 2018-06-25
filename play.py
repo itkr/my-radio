@@ -63,7 +63,8 @@ def get_driver_path(args):
 class Controller(object):
     _stop = False
 
-    def __init__(self, playback):
+    def __init__(self, radio, playback=60):
+        self.radio = radio
         self.start_time = datetime.now()
         self.end_time = self.start_time + timedelta(seconds=playback)
         print('Start: {}'.format(self.start_time.isoformat()))
@@ -81,6 +82,8 @@ class Controller(object):
                 break
             if user_in == 'q()':
                 self.stop()
+            if user_in == 'pause()':
+                self.radio.play_or_stop()
 
     def _start_loop(self):
         while not self._stop:
@@ -105,8 +108,9 @@ def main():
     print('Driver: {}'.format(driver_path))
     print('Channel: {}'.format(channel['name'].encode('utf_8')))
 
-    with Radio(driver_path, channel['url']):
-        Controller(args.playback_seconds).start()
+    with Radio(driver_path, channel['url']) as radio:
+        controller = Controller(radio, args.playback_seconds)
+        controller.start()
 
     exit()
 

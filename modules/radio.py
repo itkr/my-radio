@@ -30,6 +30,7 @@ class Radio(object):
 
     def __enter__(self):
         self.play_or_stop()
+        return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.exit()
