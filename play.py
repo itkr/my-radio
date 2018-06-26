@@ -73,17 +73,30 @@ class Controller(object):
         self.prompt = threading.Thread(target=self._prompt)
         self.prompt.start()
 
+    @property
+    def _commands(self):
+        return {
+            'q()': self.stop,
+            'pause()': self.radio.play_or_stop,
+            'help()': lambda: print('help'),
+            'channels()': lambda: print('channels'),
+            'extend()': lambda: print('extend'),
+        }
+
+    def _do_command(self, key):
+        command = self._commands.get(key)
+        if command:
+            result = command()
+            print(result or key)
+
     def _prompt(self):
         while not self._stop:
             try:
-                user_in = raw_input('>> ')
+                user_in = raw_input('radio> ')
             except EOFError:
                 self.stop()
                 break
-            if user_in == 'q()':
-                self.stop()
-            if user_in == 'pause()':
-                self.radio.play_or_stop()
+            self._do_command(user_in)
 
     def _start_loop(self):
         while not self._stop:
