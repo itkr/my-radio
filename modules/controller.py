@@ -21,7 +21,7 @@ def user_command(func):
 class _UserCommandMixin(object):
 
     @user_command
-    def q(self):
+    def quit(self):
         self.stop()
 
     @user_command
@@ -38,12 +38,17 @@ class _UserCommandMixin(object):
 
     @user_command
     def extend(self, seconds):
-        print('EXTEND', seconds)
+        seconds = int(seconds)
+        self.end_time = self.end_time + timedelta(seconds=seconds)
+        self.print_status()
 
     @user_command
     def commands(self):
         print(_commands)
 
+    @user_command
+    def status(self):
+        self.print_status()
 
 class Controller(_UserCommandMixin):
     _stop = False
@@ -52,9 +57,7 @@ class Controller(_UserCommandMixin):
         self.radio = radio
         self.start_time = datetime.now()
         self.end_time = self.start_time + timedelta(seconds=playback)
-        print('Start: {}'.format(self.start_time.isoformat()))
-        print('End: {}'.format(self.end_time.isoformat()))
-
+        self.print_status()
         self.prompt = threading.Thread(target=self._prompt)
         self.prompt.start()
 
@@ -102,3 +105,7 @@ class Controller(_UserCommandMixin):
 
     def stop(self):
         self._stop = True
+
+    def print_status(self):
+        print('Start: {}'.format(self.start_time.isoformat()))
+        print('End: {}'.format(self.end_time.isoformat()))
