@@ -3,6 +3,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import threading
+import shlex
 from datetime import datetime, timedelta
 from time import sleep
 
@@ -59,23 +60,25 @@ class Controller(_UserCommandMixin):
 
     def _get_command(self, key):
         if not key:
-            return
+            return None, None
         try:
-            command_name = key.split('(')[0]
-        except Exception:
+            input_string = shlex.split(key)
+            command_name = input_string[0]
+            args = input_string[1:]
+        except Exception as e:
             print(e)
-            return
+            return None, None
         if command_name not in _commands:
             print('"{}" not found'.format(command_name))
-            return
-        return 'self.{}'.format(key)
+            return None, None
+        return getattr(self, command_name), args
 
     def _do_command(self, key):
-        command = self._get_command(key)
+        (command, args) = self._get_command(key)
         if not command:
             return
         try:
-            return eval(command)
+            return command(*args)
         except Exception as e:
             print(e)
 
