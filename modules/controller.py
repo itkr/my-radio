@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+import functools
 import threading
 import shlex
 from datetime import datetime, timedelta
@@ -10,17 +11,30 @@ from time import sleep
 _commands = []
 
 
-def user_command(func):
-    _commands.append(func.__name__)
+def user_command(func=None, aliases=[]):
 
+    if func is None:
+        return functools.partial(user_command, aliases=aliases)
+
+    global _commands
+    _commands.append(func.__name__)
+    for alias in aliases:
+        if alias in _commands:
+            print(alias, _commands)
+            raise Exception('conflict')
+    _commands.extend(aliases)
+    _commands = list(set(_commands))
+
+    @functools.wraps(func)
     def inner(self, *args, **kwargs):
         return func(self, *args, **kwargs)
+
     return inner
 
 
 class _UserCommandMixin(object):
 
-    @user_command
+    @user_command(aliases=['q'])
     def quit(self):
         self.stop()
 
@@ -28,7 +42,7 @@ class _UserCommandMixin(object):
     def pause(self):
         self.radio.play_or_stop()
 
-    @user_command
+    @user_command()
     def help(self):
         print('HELP')
 
@@ -49,6 +63,7 @@ class _UserCommandMixin(object):
     @user_command
     def status(self):
         self.print_status()
+
 
 class Controller(_UserCommandMixin):
     _stop = False
