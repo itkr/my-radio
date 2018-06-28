@@ -60,7 +60,45 @@ def get_driver_path(args):
     raise DriverPathNotFoundError
 
 
-class Controller(object):
+_commands = []
+
+
+def user_command(func):
+    _commands.append(func.__name__)
+
+    def inner(self, *args, **kwargs):
+        return func(self, *args, **kwargs)
+    return inner
+
+
+class _UserCommandMixin(object):
+
+    @user_command
+    def q(self):
+        self.stop()
+
+    @user_command
+    def pause(self):
+        self.radio.play_or_stop()
+
+    @user_command
+    def help(self):
+        print('HELP')
+
+    @user_command
+    def channels(self):
+        print('CHANNELS')
+
+    @user_command
+    def extend(self, seconds):
+        print('EXTEND', seconds)
+
+    @user_command
+    def commands(self):
+        print(_commands)
+
+
+class Controller(_UserCommandMixin):
     _stop = False
 
     def __init__(self, radio, playback=60):
@@ -73,21 +111,27 @@ class Controller(object):
         self.prompt = threading.Thread(target=self._prompt)
         self.prompt.start()
 
-    @property
-    def _commands(self):
-        return {
-            'q()': self.stop,
-            'pause()': self.radio.play_or_stop,
-            'help()': lambda: print('help'),
-            'channels()': lambda: print('channels'),
-            'extend()': lambda: print('extend'),
-        }
+    def _get_command(self, key):
+        if not key:
+            return
+        try:
+            command_name = key.split('(')[0]
+        except Exception:
+            print(e)
+            return
+        if command_name not in _commands:
+            print('"{}" not found'.format(command_name))
+            return
+        return 'self.{}'.format(key)
 
     def _do_command(self, key):
-        command = self._commands.get(key)
-        if command:
-            result = command()
-            print(result or key)
+        command = self._get_command(key)
+        if not command:
+            return
+        try:
+            return eval(command)
+        except Exception as e:
+            print(e)
 
     def _prompt(self):
         while not self._stop:
