@@ -68,17 +68,7 @@ class Commands(object):
         self.controller.print_status()
 
 
-class Controller(object):
-    _stop = False
-
-    def __init__(self, radio, playback=60):
-        self.radio = radio
-        self.start_time = datetime.now()
-        self.end_time = self.start_time + timedelta(seconds=playback)
-        self.print_status()
-
-        self.prompt = threading.Thread(target=self._prompt)
-        self.prompt.start()
+class _PromptMixin(object):
 
     def _get_command(self, key):
         if not key:
@@ -121,17 +111,30 @@ class Controller(object):
             except EOFError:
                 self.stop()
 
+
+class Controller(_PromptMixin):
+    _stop = False
+
+    def __init__(self, radio, playback=60):
+        self.radio = radio
+        self.start_time = datetime.now()
+        self.end_time = self.start_time + timedelta(seconds=playback)
+        self.print_status()
+
+        self.prompt = threading.Thread(target=self._prompt)
+        self.prompt.start()
+
     def _check_time(self):
         if self.end_time < datetime.now():
             self.stop()
 
-    def _start_loop(self):
+    def _loop(self):
         while not self._stop:
             sleep(1)
             self._check_time()
 
     def start(self):
-        self._start_loop()
+        self._loop()
 
     def stop(self):
         self._stop = True
