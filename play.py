@@ -66,7 +66,8 @@ def main():
     driver_path = get_driver_path(args)
 
     print('Driver: {}'.format(driver_path))
-    print('Channel: {}'.format(channel['name'].encode('utf_8')))
+    # print('Channel: {}'.format(channel['name'].encode('utf_8')))
+    print('Channel: {}'.format(channel['name']))
 
     with Radio(driver_path, channel['url']) as radio:
         controller = Controller(radio, args.playback_seconds)

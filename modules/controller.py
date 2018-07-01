@@ -101,9 +101,14 @@ class Controller(_UserCommandMixin):
             print(e)
 
     def _prompt(self):
+        try:
+            user_input = raw_input
+        except NameError:
+            user_input = input
+
         while not self._stop:
             try:
-                user_in = raw_input('radio> ')
+                user_in = user_input('radio> ')
             except EOFError:
                 self.stop()
                 break
