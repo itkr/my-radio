@@ -11,8 +11,8 @@ ENV PYTHONIOENCODING "utf-8"
 # 依存モジュールインストール
 
 RUN apt update -y
-RUN apt install -y python3-dev python3-pip wget unzip gnupg
-# RUN apt install -y python-dev python-pip wget unzip gnupg
+RUN apt install -y python3-dev python3-pip wget unzip gnupg curl
+# RUN apt install -y python-dev python-pip wget unzip gnupg curl
 
 # コードコピー
 
@@ -29,6 +29,7 @@ RUN apt install -y google-chrome-stable
 
 # Seleniumのドライバ取得
 
+RUN CHROME_DRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`
 RUN wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
 RUN unzip chromedriver_linux64.zip
 
