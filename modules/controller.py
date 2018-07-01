@@ -104,9 +104,14 @@ class _PromptMixin(object):
             print(e)
 
     def _prompt(self):
+        try:
+            user_input = raw_input
+        except NameError:
+            user_input = input
+
         while not self._stop:
             try:
-                user_in = raw_input('radio> ')
+                user_in = user_input('radio> ')
                 self._do_command(user_in)
             except EOFError:
                 self.stop()
