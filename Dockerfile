@@ -30,7 +30,7 @@ RUN apt install -y google-chrome-stable
 # Seleniumのドライバ取得
 
 RUN CHROME_DRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`
-RUN wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
+RUN wget https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
 RUN unzip chromedriver_linux64.zip
 
 # Pythonライブラリ
