@@ -9,21 +9,26 @@ from datetime import datetime, timedelta
 from time import sleep
 
 _commands = []
+_aliases = {}
 
 
 def user_command(func=None, aliases=[]):
+    global _commands
+    global _aliases
 
     if func is None:
         return functools.partial(user_command, aliases=aliases)
 
-    global _commands
     _commands.append(func.__name__)
+
+    # aliase
     for alias in aliases:
         if alias in _commands:
-            print(alias, _commands)
             raise Exception('conflict')
     _commands.extend(aliases)
     _commands = list(set(_commands))
+    for alias in aliases:
+        _aliases[alias] = func.__name__
 
     @functools.wraps(func)
     def inner(self, *args, **kwargs):
@@ -36,8 +41,14 @@ class Commands(object):
 
     def __init__(self, controller):
         self.controller = controller
+        self._set_aliases()
 
-    @user_command(aliases=['q'])
+    def _set_aliases(self):
+        global _aliases
+        for k, v in _aliases.items():
+            setattr(self, k, getattr(self, v))
+
+    @user_command(aliases=['q', 'stop', 'exit'])
     def quit(self):
         self.controller.stop()
 
