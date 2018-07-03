@@ -6,7 +6,11 @@ import functools
 import threading
 import shlex
 from datetime import datetime, timedelta
+from pprint import pprint
 from time import sleep
+
+from modules.channel import get_channels
+
 
 _commands = []
 _aliases = {}
@@ -61,8 +65,8 @@ class Commands(object):
         print('HELP')
 
     @user_command
-    def channels(self):
-        print('CHANNELS')
+    def channels(self, area='JP13'):
+        pprint(get_channels(area))
 
     @user_command
     def extend(self, seconds):
@@ -89,9 +93,20 @@ class Commands(object):
         print('')
         print('-' * 30)
         for key, value in info.items():
-            print('{}: {}'.format(key.capitalize(), value))
-            print('-' * 30)
+            print('【{}】:\n{}'.format(key.capitalize(), value))
             print('')
+            print('-' * 30)
+
+    @user_command
+    def change(self, channel_key, area='JP13'):
+        channel = get_channels(area).get(channel_key)
+        if not channel:
+            print('not fount')
+            self.channels()
+        if channel:
+            print(channel['name'])
+            self.controller.radio.reload(channel['url'])
+            self.info()
 
 
 class _PromptMixin(object):
@@ -110,6 +125,7 @@ class _PromptMixin(object):
 
         if command_name not in _commands:
             print('"{}" not found'.format(command_name))
+            print('Try "commands"')
             return None, None
 
         try:
@@ -169,6 +185,7 @@ class Controller(_PromptMixin):
 
     def stop(self):
         self._stop = True
+        print('Good bye.')
 
     def print_status(self):
         status = {
@@ -176,4 +193,4 @@ class Controller(_PromptMixin):
             'end': self.end_time.isoformat(),
         }
         for key, value in status.items():
-            print('{}: {}'.format(key.capitalize(), value))
+            print('【{}】: {}'.format(key.capitalize(), value))
