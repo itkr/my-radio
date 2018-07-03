@@ -78,6 +78,21 @@ class Commands(object):
     def status(self):
         self.controller.print_status()
 
+    @user_command
+    def info(self, key=None):
+        info = self.controller.radio.get_info()
+        if key:
+            print('{}: {}'.format(
+                key.capitalize(), info.get(key, 'not found')))
+            return
+
+        print('')
+        print('-' * 30)
+        for key, value in info.items():
+            print('{}: {}'.format(key.capitalize(), value))
+            print('-' * 30)
+            print('')
+
 
 class _PromptMixin(object):
 
@@ -156,5 +171,9 @@ class Controller(_PromptMixin):
         self._stop = True
 
     def print_status(self):
-        print('Start: {}'.format(self.start_time.isoformat()))
-        print('End: {}'.format(self.end_time.isoformat()))
+        status = {
+            'start': self.start_time.isoformat(),
+            'end': self.end_time.isoformat(),
+        }
+        for key, value in status.items():
+            print('{}: {}'.format(key.capitalize(), value))

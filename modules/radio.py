@@ -19,6 +19,18 @@ class Radio(object):
         self.driver = webdriver.Chrome(driver_path, chrome_options=options)
         self.driver.get(url)
 
+    def get_info(self):
+        classes = {
+            'title': 'live-detail__title',
+            'description': 'live-detail__description',
+            'cast': 'live-detail__cast',
+            'time': 'live-detail__time',
+        }
+        return {
+            key: self.driver.find_element_by_class_name(
+                value).text for key, value in classes.items()
+        }
+
     def play_or_stop(self):
         self._play_button.click()
 

@@ -6,8 +6,9 @@ import json
 import os
 
 
-def get_channels():
+def get_channels(area='JP13'):
+    path = 'fixtures/{}.json'.format(area)
     channel_path = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), 'fixtures/JP13.json'))
+        os.path.dirname(__file__), path))
     with open(channel_path, encoding='utf-8') as channel:
         return json.loads(channel.read())
