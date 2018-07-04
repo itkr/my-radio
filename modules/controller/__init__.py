@@ -10,6 +10,7 @@ from pprint import pprint
 from time import sleep
 
 from modules.channel import get_channels
+from modules.color import ColorString
 
 
 _commands = []
@@ -39,6 +40,10 @@ def user_command(func=None, aliases=[]):
         return func(self, *args, **kwargs)
 
     return inner
+
+
+def _error(text):
+    print(ColorString(text).red())
 
 
 class Commands(object):
@@ -86,20 +91,21 @@ class Commands(object):
     def info(self, key=None):
         info = self.controller.radio.get_info()
         if key:
-            print('{}: {}'.format(
+            _error('{}: {}'.format(
                 key.capitalize(), info.get(key, 'not found')))
             return
 
         print('')
         for key, value in info.items():
-            print('\033[4m\033[93m【{}】\033[0m:\n{}'.format(key.capitalize(), value))
+            title = ColorString(key.capitalize()).yellow().under_line()
+            print('{}:\n{}'.format(title, value))
             print('')
 
     @user_command
     def change(self, channel_key, area='JP13'):
         channel = get_channels(area).get(channel_key)
         if not channel:
-            print('not fount')
+            _error('not found')
             self.channels()
         if channel:
             print(channel['name'])
@@ -118,18 +124,18 @@ class _PromptMixin(object):
             command_name = input_string[0]
             args = input_string[1:]
         except Exception as e:
-            print(e)
+            _error(e)
             return None, None
 
         if command_name not in _commands:
-            print('"{}" not found'.format(command_name))
+            _error('"{}" not found'.format(command_name))
             print('Try "commands"')
             return None, None
 
         try:
             command = getattr(Commands(self), command_name)
         except AttributeError as e:
-            print(e)
+            _error(e)
             return None, None
 
         return command, args
@@ -141,7 +147,8 @@ class _PromptMixin(object):
         try:
             return command(*args)
         except Exception as e:
-            print(e)
+            _error(e)
+            raise
 
     def _prompt(self):
         try:
@@ -149,9 +156,10 @@ class _PromptMixin(object):
         except NameError:
             user_input = input
 
+        prompt_title = ColorString('radio> ').purple()
         while not self._stop:
             try:
-                user_in = user_input('\033[95mradio> \033[0m')
+                user_in = user_input(prompt_title)
                 self._do_command(user_in)
             except EOFError:
                 self.stop()
