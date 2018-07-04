@@ -27,8 +27,8 @@ def parse_args(channel_choices):
         '-c', '--channel', dest='channel', help='channel key',
         default='TBS', choices=channel_choices)
     parser.add_argument(
-        '-s', '--seconds', dest='playback_seconds', type=int,
-        help='playback seconds', default=60 * 60)
+        '-t', '--timer', dest='playback_seconds', type=int,
+        help='playback seconds', default=None)
     return parser.parse_args()
 
 

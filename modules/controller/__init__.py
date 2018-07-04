@@ -76,6 +76,8 @@ class Commands(object):
     @user_command
     def extend(self, seconds):
         seconds = int(seconds)
+        if not self.controller.end_time:
+            self.controller.end_time = datetime.now()
         self.controller.end_time += timedelta(seconds=int(seconds))
         self.controller.print_status()
 
@@ -95,11 +97,9 @@ class Commands(object):
                 key.capitalize(), info.get(key, 'not found')))
             return
 
-        print('')
         for key, value in info.items():
             title = ColorString(key.capitalize()).yellow().under_line()
             print('{}:\n{}'.format(title, value))
-            print('')
 
     @user_command
     def change(self, channel_key, area='JP13'):
@@ -168,16 +168,20 @@ class _PromptMixin(object):
 class Controller(_PromptMixin):
     _stop = False
 
-    def __init__(self, radio, playback=60):
+    def __init__(self, radio, timer=0):
         self.radio = radio
         self.start_time = datetime.now()
-        self.end_time = self.start_time + timedelta(seconds=playback)
+        self.end_time = None
+        if timer:
+            self.end_time = self.start_time + timedelta(seconds=timer)
         self.print_status()
 
         self.prompt = threading.Thread(target=self._prompt)
         self.prompt.start()
 
     def _check_time(self):
+        if not self.end_time:
+            return
         if self.end_time < datetime.now():
             self.stop()
 
@@ -196,7 +200,7 @@ class Controller(_PromptMixin):
     def print_status(self):
         status = {
             'start': self.start_time.isoformat(),
-            'end': self.end_time.isoformat(),
+            'end': self.end_time.isoformat() if self.end_time else '',
         }
         for key, value in status.items():
             print('{}: \n{}'.format(ColorString(
