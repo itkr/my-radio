@@ -91,11 +91,9 @@ class Commands(object):
             return
 
         print('')
-        print('-' * 30)
         for key, value in info.items():
-            print('【{}】:\n{}'.format(key.capitalize(), value))
+            print('\033[4m\033[93m【{}】\033[0m:\n{}'.format(key.capitalize(), value))
             print('')
-            print('-' * 30)
 
     @user_command
     def change(self, channel_key, area='JP13'):
@@ -153,7 +151,7 @@ class _PromptMixin(object):
 
         while not self._stop:
             try:
-                user_in = user_input('radio> ')
+                user_in = user_input('\033[95mradio> \033[0m')
                 self._do_command(user_in)
             except EOFError:
                 self.stop()
