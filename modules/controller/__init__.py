@@ -67,7 +67,7 @@ class Commands(object):
 
     @user_command()
     def help(self):
-        print('HELP')
+        print(_commands)
 
     @user_command
     def channels(self, area='JP13'):
@@ -76,10 +76,6 @@ class Commands(object):
     @user_command
     def extend(self, seconds):
         self.controller.extend(seconds)
-
-    @user_command
-    def commands(self):
-        print(_commands)
 
     @user_command
     def status(self):
@@ -110,7 +106,7 @@ class _PromptMixin(object):
 
         if command_name not in _commands:
             _error('"{}" not found'.format(command_name))
-            print('Try "commands"')
+            print('Try "help"')
             return None, None
 
         try:
