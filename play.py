@@ -6,10 +6,10 @@ from __future__ import absolute_import, print_function, unicode_literals
 import argparse
 import os
 import sys
-from datetime import datetime, timedelta
 from distutils.sysconfig import get_python_lib
 
 from modules.channel import get_channels
+from modules.color import ColorString
 from modules.controller import Controller
 from modules.radio import Radio
 
@@ -65,9 +65,10 @@ def main():
     channel = channels[args.channel]
     driver_path = get_driver_path(args)
 
-    print('【Driver】: {}'.format(driver_path))
-    # print('Channel: {}'.format(channel['name'].encode('utf_8')))
-    print('【Channel】: {}'.format(channel['name']))
+    print('{}:\n{}'.format(ColorString(
+        'Driver').yellow().under_line(), driver_path))
+    print('{}:\n{}'.format(ColorString(
+        'Channel').yellow().under_line(), channel['name']))
 
     with Radio(driver_path, channel['url']) as radio:
         controller = Controller(radio, args.playback_seconds)

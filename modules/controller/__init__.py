@@ -199,4 +199,5 @@ class Controller(_PromptMixin):
             'end': self.end_time.isoformat(),
         }
         for key, value in status.items():
-            print('【{}】: {}'.format(key.capitalize(), value))
+            print('{}: \n{}'.format(ColorString(
+                key.capitalize()).yellow().under_line(), value))
