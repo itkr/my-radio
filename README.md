@@ -21,7 +21,7 @@ https://www.seleniumhq.org/download/
 #### e.g.
 
 ```bash
-CHROME_DRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`
+CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)
 wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_mac64.zip
 unzip chromedriver_mac64.zip
 ```
