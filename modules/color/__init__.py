@@ -15,8 +15,8 @@ class ColorString(str):
         'under_line': '\033[4m',
     }
 
-    def __init__(self, s, *args, **kwargs):
-        self._string = s
+    def __init__(self, s='', *args, **kwargs):
+        self._string = str(s)
         self._color = ''
         self._decoration = ''
         super(ColorString, self).__init__()

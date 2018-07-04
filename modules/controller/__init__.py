@@ -71,14 +71,11 @@ class Commands(object):
 
     @user_command
     def channels(self, area='JP13'):
-        pprint(get_channels(area))
+        self.controller.print_channels(area)
 
     @user_command
     def extend(self, seconds):
-        seconds = int(seconds)
-        if not self.controller.end_time:
-            self.controller.end_time = datetime.now()
-        self.controller.end_time += timedelta(seconds=int(seconds))
+        self.controller.extend(seconds)
         self.controller.print_status()
 
     @user_command
@@ -90,27 +87,14 @@ class Commands(object):
         self.controller.print_status()
 
     @user_command
-    def info(self, key=None):
-        info = self.controller.radio.get_info()
-        if key:
-            _error('{}: {}'.format(
-                key.capitalize(), info.get(key, 'not found')))
-            return
-
-        for key, value in info.items():
-            title = ColorString(key.capitalize()).yellow().under_line()
-            print('{}:\n{}'.format(title, value))
+    def info(self):
+        self.controller.print_info()
 
     @user_command
     def change(self, channel_key, area='JP13'):
-        channel = get_channels(area).get(channel_key)
-        if not channel:
-            _error('not found')
-            self.channels()
-        if channel:
-            print(channel['name'])
-            self.controller.radio.reload(channel['url'])
-            self.info()
+        success = self.controller.change(channel_key, area)
+        if success:
+            self.controller.print_info()
 
 
 class _PromptMixin(object):
@@ -148,7 +132,6 @@ class _PromptMixin(object):
             return command(*args)
         except Exception as e:
             _error(e)
-            raise
 
     def _prompt(self):
         try:
@@ -174,7 +157,9 @@ class Controller(_PromptMixin):
         self.end_time = None
         if timer:
             self.end_time = self.start_time + timedelta(seconds=timer)
+
         self.print_status()
+        self.print_info()
 
         self.prompt = threading.Thread(target=self._prompt)
         self.prompt.start()
@@ -196,6 +181,28 @@ class Controller(_PromptMixin):
     def stop(self):
         self._stop = True
         print('Good bye.')
+
+    def extend(self, seconds):
+        seconds = int(seconds)
+        if not self.end_time:
+            self.end_time = datetime.now()
+        self.end_time += timedelta(seconds=int(seconds))
+
+    def change(self, channel_key, area='JP13'):
+        channel = get_channels(area).get(channel_key)
+        if not channel:
+            _error('{} not found'.format(channel_key))
+            return False
+        self.radio.reload(channel['url'])
+        return True
+
+    def print_channels(self, area='JP13'):
+        pprint(get_channels(area))
+
+    def print_info(self):
+        for key, value in self.radio.get_info().items():
+            title = ColorString(key.capitalize()).yellow().under_line()
+            print('{}:\n{}'.format(title, value))
 
     def print_status(self):
         status = {
