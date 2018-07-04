@@ -57,7 +57,7 @@ class Commands(object):
         for k, v in _aliases.items():
             setattr(self, k, getattr(self, v))
 
-    @user_command(aliases=['q', 'stop', 'exit'])
+    @user_command(aliases=['q'])
     def quit(self):
         self.controller.stop()
 
@@ -76,7 +76,6 @@ class Commands(object):
     @user_command
     def extend(self, seconds):
         self.controller.extend(seconds)
-        self.controller.print_status()
 
     @user_command
     def commands(self):
@@ -92,9 +91,7 @@ class Commands(object):
 
     @user_command
     def change(self, channel_key, area='JP13'):
-        success = self.controller.change(channel_key, area)
-        if success:
-            self.controller.print_info()
+        self.controller.change(channel_key, area)
 
 
 class _PromptMixin(object):
@@ -187,14 +184,15 @@ class Controller(_PromptMixin):
         if not self.end_time:
             self.end_time = datetime.now()
         self.end_time += timedelta(seconds=int(seconds))
+        self.print_status()
 
     def change(self, channel_key, area='JP13'):
         channel = get_channels(area).get(channel_key)
         if not channel:
             _error('{} not found'.format(channel_key))
-            return False
+            return
         self.radio.reload(channel['url'])
-        return True
+        self.print_info()
 
     def print_channels(self, area='JP13'):
         pprint(get_channels(area))
