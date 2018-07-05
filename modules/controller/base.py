@@ -7,11 +7,8 @@ from pprint import pprint
 from time import sleep
 
 from modules.channel import get_channels
-from modules.color import ColorString
-
-
-def _error(text):
-    print(ColorString(text).red())
+from modules.color import ColorString, print_error
+from modules.commands import Commands
 
 
 class BaseController(object):
@@ -26,6 +23,10 @@ class BaseController(object):
 
         self.print_status()
         self.print_info()
+
+    @property
+    def commands(self):
+        return Commands(self)
 
     def _check_time(self):
         if not self.end_time:
@@ -55,7 +56,7 @@ class BaseController(object):
     def change(self, channel_key, area='JP13'):
         channel = get_channels(area).get(channel_key)
         if not channel:
-            _error('{} not found'.format(channel_key))
+            print_error('{} not found'.format(channel_key))
             return
         self.radio.reload(channel['url'])
         self.print_info()

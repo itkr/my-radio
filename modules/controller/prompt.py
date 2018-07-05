@@ -8,7 +8,6 @@ import shlex
 from modules.color import ColorString, print_error
 
 from .base import BaseController
-from .commands import Commands
 
 # python3: input, python2: raw_input
 try:
@@ -23,10 +22,6 @@ class PromptController(BaseController):
         super(PromptController, self).__init__(radio, timer)
         self.prompt = threading.Thread(target=self._prompt)
         self.prompt.start()
-
-    @property
-    def commands(self):
-        return Commands(self)
 
     def _execute(self, user_input):
         try:

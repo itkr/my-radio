@@ -27,9 +27,9 @@
         "name": "NHK第1",
         "url": "http://radiko.jp/#!/live/JOAK"
     },
-    "JOAR-FM": {
+    "JOAK-FM": {
         "name": "NHK-FM",
-        "url": "http://radiko.jp/#!/live/JOAR-FM"
+        "url": "http://radiko.jp/#!/live/JOAK-FM"
     },
     "JORF": {
         "name": "ラジオ日本",

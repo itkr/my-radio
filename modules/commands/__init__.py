@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import functools
 
-from modules.color import ColorString
+from modules.color import print_error
 
 _commands = []
 _aliases = {}
@@ -35,10 +35,6 @@ def user_command(func=None, aliases=[]):
     return inner
 
 
-def _error(text):
-    print(ColorString(text).red())
-
-
 class Commands(object):
 
     def __init__(self, controller):
@@ -52,7 +48,7 @@ class Commands(object):
 
     @staticmethod
     def _not_fount(name, *args):
-        _error('\'{}\' not found => Try \'help\''.format(name))
+        print_error('\'{}\' not found => Try \'help\''.format(name))
 
     @classmethod
     def get_all(cls):
