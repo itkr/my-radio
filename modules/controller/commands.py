@@ -58,7 +58,7 @@ class Commands(object):
     def pause(self):
         self.controller.radio.play_or_stop()
 
-    @user_command()
+    @user_command
     def help(self):
         print(self.get_all())
 
