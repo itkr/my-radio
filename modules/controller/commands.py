@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import functools
 
+from modules.color import ColorString
 
 _commands = []
 _aliases = {}
@@ -34,6 +35,10 @@ def user_command(func=None, aliases=[]):
     return inner
 
 
+def _error(text):
+    print(ColorString(text).red())
+
+
 class Commands(object):
 
     def __init__(self, controller):
@@ -45,10 +50,20 @@ class Commands(object):
         for k, v in _aliases.items():
             setattr(self, k, getattr(self, v))
 
+    @staticmethod
+    def _not_fount(name, *args):
+        _error('\'{}\' not found => Try \'help\''.format(name))
+
     @classmethod
     def get_all(cls):
         global _commands
         return _commands
+
+    def get(self, name):
+        commands = self.get_all()
+        if name not in commands:
+            return functools.partial(self._not_fount, name=name)
+        return getattr(self, name)
 
     @user_command(aliases=['q'])
     def quit(self):

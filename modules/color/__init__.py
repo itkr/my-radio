@@ -50,3 +50,7 @@ class ColorString(str):
 
     def under_line(self):
         return self._set_decoration('under_line')
+
+
+def print_error(text):
+    print(ColorString(text).red())

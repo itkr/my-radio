@@ -10,7 +10,7 @@ from distutils.sysconfig import get_python_lib
 
 from modules.channel import get_channels
 from modules.color import ColorString
-from modules.controller import Controller
+from modules.controller import PromptController
 from modules.radio import Radio
 
 
@@ -71,7 +71,7 @@ def main():
         'Channel').yellow().under_line(), channel['name']))
 
     with Radio(driver_path, channel['url']) as radio:
-        controller = Controller(radio, args.playback_seconds)
+        controller = PromptController(radio, args.playback_seconds)
         controller.start()
 
     exit()
