@@ -17,10 +17,12 @@ except NameError:
     _input = input
 
 
-class _PromptMixin(object):
+class PromptController(BaseController):
 
-    def stop(self):
-        raise NotImplementedError
+    def __init__(self, radio, timer=0):
+        super(PromptController, self).__init__(radio, timer)
+        self.prompt = threading.Thread(target=self._prompt)
+        self.prompt.start()
 
     @property
     def commands(self):
@@ -29,6 +31,8 @@ class _PromptMixin(object):
     def _execute(self, user_input):
         try:
             inputs = shlex.split(user_input)
+            if self._stop:
+                return
             command = self.commands.get(inputs[0])
             return command(*inputs[1:])
         except Exception as e:
@@ -42,11 +46,3 @@ class _PromptMixin(object):
                     self._execute(user_input)
         except EOFError:
             self.stop()
-
-
-class PromptController(BaseController, _PromptMixin):
-
-    def __init__(self, radio, timer=0):
-        super(PromptController, self).__init__(radio, timer)
-        self.prompt = threading.Thread(target=self._prompt)
-        self.prompt.start()
