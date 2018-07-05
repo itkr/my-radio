@@ -2,7 +2,6 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-import functools
 import threading
 import shlex
 from datetime import datetime, timedelta
@@ -12,82 +11,11 @@ from time import sleep
 from modules.channel import get_channels
 from modules.color import ColorString
 
-
-_commands = []
-_aliases = {}
-
-
-def user_command(func=None, aliases=[]):
-    global _commands
-    global _aliases
-
-    if func is None:
-        return functools.partial(user_command, aliases=aliases)
-
-    _commands.append(func.__name__)
-
-    # aliase
-    for alias in aliases:
-        if alias in _commands:
-            raise Exception('conflict')
-    _commands.extend(aliases)
-    _commands = list(set(_commands))
-    for alias in aliases:
-        _aliases[alias] = func.__name__
-
-    @functools.wraps(func)
-    def inner(self, *args, **kwargs):
-        return func(self, *args, **kwargs)
-
-    return inner
+from .commands import Commands
 
 
 def _error(text):
     print(ColorString(text).red())
-
-
-class Commands(object):
-
-    def __init__(self, controller):
-        self.controller = controller
-        self._set_aliases()
-
-    def _set_aliases(self):
-        global _aliases
-        for k, v in _aliases.items():
-            setattr(self, k, getattr(self, v))
-
-    @user_command(aliases=['q'])
-    def quit(self):
-        self.controller.stop()
-
-    @user_command
-    def pause(self):
-        self.controller.radio.play_or_stop()
-
-    @user_command()
-    def help(self):
-        print(_commands)
-
-    @user_command
-    def channels(self, area='JP13'):
-        self.controller.print_channels(area)
-
-    @user_command
-    def extend(self, seconds):
-        self.controller.extend(seconds)
-
-    @user_command
-    def status(self):
-        self.controller.print_status()
-
-    @user_command
-    def info(self):
-        self.controller.print_info()
-
-    @user_command
-    def change(self, channel_key, area='JP13'):
-        self.controller.change(channel_key, area)
 
 
 class _PromptMixin(object):
@@ -104,7 +32,7 @@ class _PromptMixin(object):
             _error(e)
             return None, None
 
-        if command_name not in _commands:
+        if command_name not in Commands.get_all():
             _error('"{}" not found'.format(command_name))
             print('Try "help"')
             return None, None
@@ -141,7 +69,11 @@ class _PromptMixin(object):
                 self.stop()
 
 
-class Controller(_PromptMixin):
+class BaseController(object):
+    pass
+
+
+class Controller(BaseController, _PromptMixin):
     _stop = False
 
     def __init__(self, radio, timer=0):
