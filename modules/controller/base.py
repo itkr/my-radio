@@ -11,6 +11,10 @@ from modules.color import ColorString, print_error
 from modules.commands import Commands
 
 
+def title_string(text):
+    return ColorString(text.capitalize()).yellow().under_line()
+
+
 class BaseController(object):
 
     _stop = False
@@ -66,8 +70,7 @@ class BaseController(object):
 
     def print_info(self):
         for key, value in self.radio.get_info().items():
-            title = ColorString(key.capitalize()).yellow().under_line()
-            print('{}:\n{}'.format(title, value))
+            print('{}:\n{}'.format(title_string(key), value))
 
     def print_status(self):
         status = {
@@ -75,5 +78,4 @@ class BaseController(object):
             'end': self.end_time.isoformat() if self.end_time else '',
         }
         for key, value in status.items():
-            print('{}: \n{}'.format(ColorString(
-                key.capitalize()).yellow().under_line(), value))
+            print('{}: \n{}'.format(title_string(key), value))
