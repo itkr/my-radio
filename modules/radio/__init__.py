@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import functools
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 
 
@@ -23,10 +24,10 @@ class Radio(object):
         self.driver.get(url)
 
     def reload(self, url):
-        self.driver.quit()
-        self.driver = self.new_driver()
+        self.stop()
         self.driver.get(url)
-        self.play_or_stop()
+        self.driver.refresh()
+        self.play()
 
     def get_info(self):
         classes = {
@@ -39,6 +40,18 @@ class Radio(object):
             key: self.driver.find_element_by_class_name(
                 value).text for key, value in classes.items()
         }
+
+    def play(self):
+        try:
+            self.driver.find_element_by_class_name('btn--play').click()
+        except NoSuchElementException:
+            pass
+
+    def stop(self):
+        try:
+            self.driver.find_element_by_class_name('btn--stop').click()
+        except NoSuchElementException:
+            pass
 
     def play_or_stop(self):
         self._play_button.click()
