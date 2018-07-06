@@ -26,8 +26,6 @@ class PromptController(BaseController):
     def _execute(self, user_input):
         try:
             inputs = shlex.split(user_input)
-            if self._stop:
-                return
             command = self.commands.get(inputs[0])
             return command(*inputs[1:])
         except Exception as e:
@@ -37,7 +35,7 @@ class PromptController(BaseController):
         try:
             while not self._stop:
                 user_input = _input(ColorString('radio> ').purple())
-                if user_input:
+                if user_input and not self._stop:
                     self._execute(user_input)
         except EOFError:
             self.stop()
