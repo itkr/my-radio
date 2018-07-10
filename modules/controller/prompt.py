@@ -2,18 +2,16 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-import threading
 import shlex
+import threading
+
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.formatted_text import ANSI
 
 from modules.color import ColorString, print_error
 
 from .base import BaseController
-
-# python3: input, python2: raw_input
-try:
-    _input = raw_input
-except NameError:
-    _input = input
 
 
 class PromptController(BaseController):
@@ -32,10 +30,15 @@ class PromptController(BaseController):
             print_error(e)
 
     def _prompt(self):
+        commands = self.commands.get_all()
+        reserved_words_completer = WordCompleter(commands)
         try:
             while not self._stop:
-                user_input = _input(ColorString('radio> ').purple())
+                user_input = prompt(ANSI('\x1b[35mradio> '),
+                                    completer=reserved_words_completer)
                 if user_input and not self._stop:
                     self._execute(user_input)
         except EOFError:
             self.stop()
+        except ValueError:
+            pass
