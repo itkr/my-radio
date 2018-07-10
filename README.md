@@ -11,7 +11,7 @@ git clone git@github.com:itkr/my-radio.git
 ### Install Selenium
 
 ```bash
-pip install selenium
+pip install -r requirements.txt
 ```
 
 ### Install Driver
