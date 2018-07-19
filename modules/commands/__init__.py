@@ -73,7 +73,7 @@ class Commands(object):
     def help(self):
         print(self.get_all())
 
-    @user_command
+    @user_command(aliases=['ls'])
     def channels(self, area='JP13'):
         self.controller.print_channels(area)
 
