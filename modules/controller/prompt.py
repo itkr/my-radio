@@ -40,5 +40,7 @@ class PromptController(BaseController):
                     self._execute(user_input)
         except EOFError:
             self.stop()
+        except KeyboardInterrupt:
+            self.stop()
         except ValueError:
             pass
