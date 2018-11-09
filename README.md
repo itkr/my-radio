@@ -31,3 +31,12 @@ unzip chromedriver_mac64.zip
 ```bash
 python play.py
 ```
+
+## TODO
+
+use docker
+
+```
+docker build -t sample:1.0 .
+docker run -i -t sample:1.0
+```
