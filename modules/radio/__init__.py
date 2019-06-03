@@ -43,13 +43,13 @@ class Radio(object):
 
     def play(self):
         try:
-            self.driver.find_element_by_class_name('btn--play').click()
+            self.driver.find_element_by_class_name('player_play').click()
         except NoSuchElementException:
             pass
 
     def stop(self):
         try:
-            self.driver.find_element_by_class_name('btn--stop').click()
+            self.driver.find_element_by_class_name('player_stop').click()
         except NoSuchElementException:
             pass
 
