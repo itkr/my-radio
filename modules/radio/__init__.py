@@ -3,18 +3,19 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import functools
+from time import sleep
 
 from selenium import webdriver
 from selenium.common.exceptions import (
-    ElementNotVisibleException,
-    NoSuchElementException
+    NoSuchElementException,
+    WebDriverException
 )
 from selenium.webdriver.chrome.options import Options
 
 
 def _default_options():
     options = Options()
-    # options.add_argument('--headless')
+    options.add_argument('--headless')
     options.add_argument('--no-sandbox')  # docker 用
     return options
 
@@ -67,14 +68,22 @@ class Radio(object):
     def _play_button(self):
         return self.driver.find_element_by_class_name('btn--primary')
 
+    def _setup(self):
+        limit = 10
+        for i in range(limit):
+            try:
+                _for_check = self.get_info()
+                self.play_or_stop()
+                return self
+            except WebDriverException:
+                print('retry', i)
+                sleep(3)
+                self.driver.refresh()
+        print('timeout')
+        self.exit()
+
     def __enter__(self):
-        try:
-            self.play_or_stop()
-        except ElementNotVisibleException as e:
-            # TODO: loop
-            self.driver.refresh()
-            self.play_or_stop()
-        return self
+        return self._setup()
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.exit()
